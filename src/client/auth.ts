@@ -47,6 +47,11 @@ export interface OAuthClientProvider {
   state?(): string | Promise<string>;
 
   /**
+   * If implemented, this permits the OAuth client to save the authorization server metadata.
+   */
+  saveAuthorizationServerMetadata?(metadata?: OAuthMetadata): void | Promise<void>;
+
+  /**
    * Loads information about this OAuth client, as registered already with the
    * server, or returns `undefined` if the client is not registered with the
    * server.
@@ -344,6 +349,10 @@ async function authInternal(
   const metadata = await discoverAuthorizationServerMetadata(authorizationServerUrl, {
     fetchFn,
   });
+
+  if (provider.saveAuthorizationServerMetadata) {
+    await provider.saveAuthorizationServerMetadata(metadata);
+  }
 
   // Handle client registration if needed
   let clientInformation = await Promise.resolve(provider.clientInformation());
