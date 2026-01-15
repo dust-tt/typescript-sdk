@@ -52,9 +52,9 @@ export interface OAuthClientProvider {
     state?(): string | Promise<string>;
 
     /**
-     * If implemented, this permits the OAuth client to save the authorization server metadata.
+     * If implemented, this permits the OAuth client to save the authorization server metadata and resource.
      */
-    saveAuthorizationServerMetadata?(metadata?: OAuthMetadata): void | Promise<void>;
+    saveAuthorizationServerMetadataAndResource?(metadata?: OAuthMetadata, resource?: URL): void | Promise<void>;
 
     /**
      * Loads information about this OAuth client, as registered already with the
@@ -361,8 +361,8 @@ async function authInternal(
         fetchFn
     });
 
-    if (provider.saveAuthorizationServerMetadata) {
-        await provider.saveAuthorizationServerMetadata(metadata);
+    if (provider.saveAuthorizationServerMetadataAndResource) {
+        await provider.saveAuthorizationServerMetadataAndResource(metadata, resource);
     }
 
     // Handle client registration if needed
